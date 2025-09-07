@@ -24,7 +24,7 @@ Please download models and place them them in body_models folder of this reposit
 
 ```shell
 # Create conda environment
-conda create -n amass python=3.7.10 -y
+conda create -n amass python=3.7 -y
 conda activate amass
 
 # Install required packages
