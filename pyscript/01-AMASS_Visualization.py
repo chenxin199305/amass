@@ -193,6 +193,17 @@ print(
     f"=" * 50 + "\n",
 )
 
+"""
+Jason 2025-09-11:
+可以理解为，AMASS 数据集提供了人体模型在不同时间点的
+- 全身姿态（pose_body）
+- 手部姿态（pose_hand）
+- 形状参数（betas）
+- 软组织动态参数（dmpls）
+- 全局位置（trans）
+- 全局方向（root_orient）
+这些参数共同描述了人体在三维空间中的完整状态。
+"""
 body_trans_root = bm(**{k: v for k, v in body_parms.items() if k in [
     "pose_body",
     "betas",
