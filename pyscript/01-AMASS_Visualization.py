@@ -96,20 +96,19 @@ def vis_body_pose_beta(fId=0):
     body_image = mv.render(render_wireframe=False)
     show_image(body_image)
 
-    print(
-        f"Frame ID: {fId}\n"
-        f"Body vertices (v) shape: {body_pose_beta.v.shape}\n"
-        f"Body vertices (v) min: {body_pose_beta.v.min()}\n"
-        f"Body vertices (v) max: {body_pose_beta.v.max()}\n"
-        f"Body vertices (v) mean: {body_pose_beta.v.mean()}\n"
-        f"Body vertices (v) std: {body_pose_beta.v.std()}\n"
-        f"Body faces shape: {faces.shape}\n"
-        f"Body faces min: {faces.min()}\n"
-        f"Body faces max: {faces.max()}\n"
-        f"Body faces mean: {faces.mean()}\n"
-        f"Body faces std: {faces.std()}\n"
-    )
 
+print(
+    f"Body vertices (v) shape: {body_pose_beta.v.shape}\n"
+    f"Body vertices (v) min: {body_pose_beta.v.min()}\n"
+    f"Body vertices (v) max: {body_pose_beta.v.max()}\n"
+    f"Body vertices (v) mean: {body_pose_beta.v.mean()}\n"
+    f"Body vertices (v) std: {body_pose_beta.v.std()}\n"
+    f"Body faces shape: {faces.shape}\n"
+    f"Body faces min: {faces.min()}\n"
+    f"Body faces max: {faces.max()}\n"
+    f"Body faces mean: {faces.mean()}\n"
+    f"Body faces std: {faces.std()}\n"
+)
 
 vis_body_pose_beta(fId=0)
 
