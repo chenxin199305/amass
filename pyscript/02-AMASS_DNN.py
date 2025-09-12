@@ -18,7 +18,7 @@ support_dir = osp.join(project_dir, "support_data")
 
 # Choose the device to run the body model on.
 # comp_device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-comp_device = "cpu"  # Using GPU may cause unexpected issues for some users
+compute_device = "cpu"  # Using GPU may cause unexpected issues for some users
 
 # ====================================================================================================
 
@@ -116,11 +116,11 @@ bm_fname = osp.join(support_dir, "body_model/smplh/male/model.npz")
 num_betas = 16  # number of body parameters
 num_dmpls = 8  # number of DMPL parameters
 
-bm = BodyModel(bm_fname=bm_fname, num_betas=num_betas).to(comp_device)
+bm = BodyModel(bm_fname=bm_fname, num_betas=num_betas).to(compute_device)
 faces = c2c(bm.f)
 
 bdata = next(iter(dataloader))
-body_v = bm.forward(**{k: v.to(comp_device) for k, v in bdata.items() if k in ["pose_body", "betas"]}).v
+body_v = bm.forward(**{k: v.to(compute_device) for k, v in bdata.items() if k in ["pose_body", "betas"]}).v
 
 view_angles = [0, 180, 90, -90]
 images = numpy.zeros([len(view_angles), batch_size, 1, imw, imh, 3])

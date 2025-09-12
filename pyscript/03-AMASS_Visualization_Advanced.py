@@ -19,7 +19,7 @@ support_dir = osp.join(project_dir, "support_data")
 
 # Choose the device to run the body model on.
 # comp_device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-comp_device = "cpu"  # Using GPU may cause unexpected issues for some users
+compute_device = "cpu"  # Using GPU may cause unexpected issues for some users
 
 # ====================================================================================================
 
@@ -41,12 +41,12 @@ print('The subject of the mocap sequence is  {}.'.format(subject_gender))
 time_length = len(bdata['trans'])
 
 body_parms = {
-    'root_orient': torch.Tensor(bdata['poses'][:, :3]).to(comp_device),  # controls the global root orientation
-    'pose_body': torch.Tensor(bdata['poses'][:, 3:66]).to(comp_device),  # controls the body
-    'pose_hand': torch.Tensor(bdata['poses'][:, 66:]).to(comp_device),  # controls the finger articulation
-    'trans': torch.Tensor(bdata['trans']).to(comp_device),  # controls the global body position
-    'betas': torch.Tensor(numpy.repeat(bdata['betas'][:num_betas][numpy.newaxis], repeats=time_length, axis=0)).to(comp_device),  # controls the body shape. Body shape is static
-    'dmpls': torch.Tensor(bdata['dmpls'][:, :num_dmpls]).to(comp_device)  # controls soft tissue dynamics
+    'root_orient': torch.Tensor(bdata['poses'][:, :3]).to(compute_device),  # controls the global root orientation
+    'pose_body': torch.Tensor(bdata['poses'][:, 3:66]).to(compute_device),  # controls the body
+    'pose_hand': torch.Tensor(bdata['poses'][:, 66:]).to(compute_device),  # controls the finger articulation
+    'trans': torch.Tensor(bdata['trans']).to(compute_device),  # controls the global body position
+    'betas': torch.Tensor(numpy.repeat(bdata['betas'][:num_betas][numpy.newaxis], repeats=time_length, axis=0)).to(compute_device),  # controls the body shape. Body shape is static
+    'dmpls': torch.Tensor(bdata['dmpls'][:, :num_dmpls]).to(compute_device)  # controls soft tissue dynamics
 }
 
 print('Body parameter vector shapes: \n{}'.format(' \n'.join(['{}: {}'.format(k, v.shape) for k, v in body_parms.items()])))
@@ -71,7 +71,7 @@ from human_body_prior.body_model.body_model import BodyModel
 bm_smpl_fname = osp.join(support_dir, 'body_model/smplh/{}/model.npz'.format(subject_gender))
 # bm_smpl_fname = '/is/ps3/nghorbani/code-repos/amass/support_data/body_model/smpl/neutral/model.npz'
 
-bm = BodyModel(bm_fname=bm_smpl_fname, num_betas=num_betas).to(comp_device)
+bm = BodyModel(bm_fname=bm_smpl_fname, num_betas=num_betas).to(compute_device)
 
 faces = c2c(bm.f)
 num_verts = bm.init_v_template.shape[1]
@@ -79,7 +79,7 @@ num_verts = bm.init_v_template.shape[1]
 # ====================================================================================================
 
 print({k: v.shape for k, v in body_parms.items() if k in ['pose_body', 'betas']})
-body = bm(**{k: v.to(comp_device) for k, v in body_parms.items() if k in ['pose_body']})
+body = bm(**{k: v.to(compute_device) for k, v in body_parms.items() if k in ['pose_body']})
 body_mesh_wofingers = trimesh.Trimesh(vertices=c2c(body.v[0]), faces=faces, vertex_colors=numpy.tile(colors['grey'], (num_verts, 1)))
 mv.set_static_meshes([body_mesh_wofingers])
 body_image_wofingers = mv.render(render_wireframe=False)

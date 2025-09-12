@@ -23,7 +23,7 @@ print(
 
 # Choose the device to run the body model on.
 # comp_device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-comp_device = "cpu"  # Using GPU may cause unexpected issues for some users
+compute_device = "cpu"  # Using GPU may cause unexpected issues for some users
 
 amass_npz_fname = osp.join(support_dir, "github_data/dmpl_sample.npz")  # the path to body data
 bdata = numpy.load(amass_npz_fname)
@@ -47,18 +47,18 @@ dmpl_fname = osp.join(support_dir, f"body_model/dmpls/{subject_gender_str}/model
 num_betas = 16  # number of body parameters
 num_dmpls = 8  # number of DMPL parameters
 
-bm = BodyModel(bm_fname=bm_fname, num_betas=num_betas, num_dmpls=num_dmpls, dmpl_fname=dmpl_fname).to(comp_device)
+bm = BodyModel(bm_fname=bm_fname, num_betas=num_betas, num_dmpls=num_dmpls, dmpl_fname=dmpl_fname).to(compute_device)
 faces = c2c(bm.f)
 
 time_length = len(bdata["trans"])
 
 body_parms = {
-    "root_orient": torch.Tensor(bdata["poses"][:, :3]).to(comp_device),  # controls the global root orientation
-    "pose_body": torch.Tensor(bdata["poses"][:, 3:66]).to(comp_device),  # controls the body
-    "pose_hand": torch.Tensor(bdata["poses"][:, 66:]).to(comp_device),  # controls the finger articulation
-    "trans": torch.Tensor(bdata["trans"]).to(comp_device),  # controls the global body position
-    "betas": torch.Tensor(numpy.repeat(bdata["betas"][:num_betas][numpy.newaxis], repeats=time_length, axis=0)).to(comp_device),  # controls the body shape. Body shape is static
-    "dmpls": torch.Tensor(bdata["dmpls"][:, :num_dmpls]).to(comp_device)  # controls soft tissue dynamics
+    "root_orient": torch.Tensor(bdata["poses"][:, :3]).to(compute_device),  # controls the global root orientation
+    "pose_body": torch.Tensor(bdata["poses"][:, 3:66]).to(compute_device),  # controls the body
+    "pose_hand": torch.Tensor(bdata["poses"][:, 66:]).to(compute_device),  # controls the finger articulation
+    "trans": torch.Tensor(bdata["trans"]).to(compute_device),  # controls the global body position
+    "betas": torch.Tensor(numpy.repeat(bdata["betas"][:num_betas][numpy.newaxis], repeats=time_length, axis=0)).to(compute_device),  # controls the body shape. Body shape is static
+    "dmpls": torch.Tensor(bdata["dmpls"][:, :num_dmpls]).to(compute_device)  # controls soft tissue dynamics
 }
 
 print("Body parameter vector shapes: \n{}".format(" \n".join(["{}: {}".format(k, v.shape) for k, v in body_parms.items()])))

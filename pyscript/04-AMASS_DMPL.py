@@ -19,7 +19,7 @@ support_dir = osp.join(project_dir, "support_data")
 
 # Choose the device to run the body model on.
 # comp_device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-comp_device = "cpu"  # Using GPU may cause unexpected issues for some users
+compute_device = "cpu"  # Using GPU may cause unexpected issues for some users
 
 # ====================================================================================================
 
@@ -44,7 +44,7 @@ dmpl_fname = osp.join(support_dir, f"body_model/dmpls/{subject_gender}/model.npz
 num_betas = 16  # number of body parameters
 num_dmpls = 8  # number of DMPL parameters
 
-bm = BodyModel(bm_fname=bm_fname, num_betas=num_betas, num_dmpls=num_dmpls, dmpl_fname=dmpl_fname).to(comp_device)
+bm = BodyModel(bm_fname=bm_fname, num_betas=num_betas, num_dmpls=num_dmpls, dmpl_fname=dmpl_fname).to(compute_device)
 faces = c2c(bm.f)
 
 # ====================================================================================================
@@ -52,12 +52,12 @@ faces = c2c(bm.f)
 time_length = len(bdata["trans"])
 
 body_parms = {
-    "root_orient": torch.Tensor(bdata["poses"][:, :3]).to(comp_device),  # controls the global root orientation
-    "pose_body": torch.Tensor(bdata["poses"][:, 3:66]).to(comp_device),  # controls the body
-    "pose_hand": torch.Tensor(bdata["poses"][:, 66:]).to(comp_device),  # controls the finger articulation
-    "trans": torch.Tensor(bdata["trans"]).to(comp_device),  # controls the global body position
-    "betas": torch.Tensor(numpy.repeat(bdata["betas"][:num_betas][numpy.newaxis], repeats=time_length, axis=0)).to(comp_device),  # controls the body shape. Body shape is static
-    "dmpls": torch.Tensor(bdata["dmpls"][:, :num_dmpls]).to(comp_device)  # controls soft tissue dynamics
+    "root_orient": torch.Tensor(bdata["poses"][:, :3]).to(compute_device),  # controls the global root orientation
+    "pose_body": torch.Tensor(bdata["poses"][:, 3:66]).to(compute_device),  # controls the body
+    "pose_hand": torch.Tensor(bdata["poses"][:, 66:]).to(compute_device),  # controls the finger articulation
+    "trans": torch.Tensor(bdata["trans"]).to(compute_device),  # controls the global body position
+    "betas": torch.Tensor(numpy.repeat(bdata["betas"][:num_betas][numpy.newaxis], repeats=time_length, axis=0)).to(compute_device),  # controls the body shape. Body shape is static
+    "dmpls": torch.Tensor(bdata["dmpls"][:, :num_dmpls]).to(compute_device)  # controls soft tissue dynamics
 }
 
 print("Body parameter vector shapes: \n{}".format(" \n".join(["{}: {}".format(k, v.shape) for k, v in body_parms.items()])))
@@ -78,26 +78,26 @@ mv = MeshViewer(width=imw, height=imh, use_offscreen=True)
 
 # ====================================================================================================
 
-w_dmpl_parms = {k: v for k, v in body_parms.items() if k in ["pose_body", "betas", "pose_hand", "dmpls"]}
-w_dmpl_trans = torch.zeros_like(body_parms["trans"])
-w_dmpl_trans[:, 0] += -0.5
-w_dmpl_parms["trans"] = w_dmpl_trans
-body_dmpls = bm(**w_dmpl_parms)
+with_dmpl_parms = {k: v for k, v in body_parms.items() if k in ["pose_body", "betas", "pose_hand", "dmpls"]}
+with_dmpl_trans = torch.zeros_like(body_parms["trans"])
+with_dmpl_trans[:, 0] += -0.75
+with_dmpl_parms["trans"] = with_dmpl_trans
+body_model_with_dmpls = bm(**with_dmpl_parms)
 
-wo_dmpl_parms = {k: v for k, v in body_parms.items() if k in ["pose_body", "betas", "pose_hand"]}
-wo_dmpl_trans = torch.zeros_like(body_parms["trans"])
-wo_dmpl_trans[:, 0] += 0.5
-wo_dmpl_parms["trans"] = wo_dmpl_trans
-body_wo_dmpls = bm(**wo_dmpl_parms)
+without_dmpl_parms = {k: v for k, v in body_parms.items() if k in ["pose_body", "betas", "pose_hand"]}
+without_dmpl_trans = torch.zeros_like(body_parms["trans"])
+without_dmpl_trans[:, 0] += 0.75
+without_dmpl_parms["trans"] = without_dmpl_trans
+body_model_without_dmpls = bm(**without_dmpl_parms)
 
 
 def vis_dmpl_comparision():
     image_arr = []
     for fId in range(time_length):
-        body_mesh_w_dmpl = trimesh.Trimesh(vertices=c2c(body_dmpls.v[fId]), faces=faces, vertex_colors=numpy.tile(colors["grey"], (6890, 1)))
-        body_mesh_wo_dmpl = trimesh.Trimesh(vertices=c2c(body_wo_dmpls.v[fId]), faces=faces, vertex_colors=numpy.tile(colors["grey"], (6890, 1)))
+        body_mesh_with_dmpl = trimesh.Trimesh(vertices=c2c(body_model_with_dmpls.v[fId]), faces=faces, vertex_colors=numpy.tile(colors["red"], (6890, 1)))
+        body_mesh_without_dmpl = trimesh.Trimesh(vertices=c2c(body_model_without_dmpls.v[fId]), faces=faces, vertex_colors=numpy.tile(colors["blue"], (6890, 1)))
 
-        mv.set_static_meshes([body_mesh_w_dmpl, body_mesh_wo_dmpl])
+        mv.set_static_meshes([body_mesh_with_dmpl, body_mesh_without_dmpl])
         body_image = mv.render(render_wireframe=False)
         image_arr.append(body_image)
 
