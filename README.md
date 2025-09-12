@@ -35,8 +35,14 @@ bash install_env.sh
 
 2. Change dependency code to enable plot image using matplotlib:
 
-```shell
+```python
 # In body_visualizer/tools/vis_tools.py
+import numpy as np
+import cv2
+import os
+import trimesh
+
+
 def show_image(img_ndarray):
     '''
     Visualize rendered body images resulted from render_smpl_params in Jupyter notebook
@@ -56,6 +62,24 @@ def show_image(img_ndarray):
 
     # fig.canvas.draw()
     # return True
+
+
+def imagearray2file(img_array, outpath=None, fps=30):
+    '''
+    :param nparray: RxCxTxwidthxheightx3
+    :param outpath: the directory where T images will be dumped for each time point in range T
+    :param fps: fps of the gif file
+    :return:
+        it will return an image list with length T
+        if outpath is given as a png file, an image will be saved for each t in T.
+        if outpath is given as a gif file, an animated image with T frames will be created.
+    '''
+    # content ...
+
+    with imageio.get_writer(outpath, mode='I', duration=(1000 * 1 / fps)) as writer:
+        pass
+
+    # content ...
 ```
 
 ### Run Scripts
