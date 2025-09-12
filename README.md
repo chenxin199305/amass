@@ -85,8 +85,11 @@ def imagearray2file(img_array, outpath=None, fps=30):
 
 ### Run Scripts
 
-1. Run `01-AMASS_Visualization.py` as following:
+Run examples as following:
 
 ```bash
 python pyscript/01-AMASS_Visualization.py
+python pyscript/02-AMASS_DNN.py
+python pyscript/03-AMASS_Visualization_Advanced.py
+python pyscript/04-AMASS_DMPL.py
 ```
