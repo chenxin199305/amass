@@ -1,13 +1,12 @@
-# Visualizing Body Data
-import time
+# Description: Visualize AMASS mocap data using SMPLH and DMPL models from human_body_prior
 
+import numpy
 import torch
-import numpy as np
 
 # ====================================================================================================
 
-from human_body_prior.tools.omni_tools import copy2cpu as c2c
 from os import path as osp
+from human_body_prior.tools.omni_tools import copy2cpu as c2c
 
 current_file_path = osp.abspath(__file__)
 current_dir = osp.dirname(current_file_path)
@@ -27,7 +26,7 @@ print(
 comp_device = "cpu"  # Using GPU may cause unexpected issues for some users
 
 amass_npz_fname = osp.join(support_dir, "github_data/dmpl_sample.npz")  # the path to body data
-bdata = np.load(amass_npz_fname)
+bdata = numpy.load(amass_npz_fname)
 
 # you can set the gender manually and if it differs from data"s then contact or interpenetration issues might happen
 subject_gender = bdata["gender"]
@@ -58,7 +57,7 @@ body_parms = {
     "pose_body": torch.Tensor(bdata["poses"][:, 3:66]).to(comp_device),  # controls the body
     "pose_hand": torch.Tensor(bdata["poses"][:, 66:]).to(comp_device),  # controls the finger articulation
     "trans": torch.Tensor(bdata["trans"]).to(comp_device),  # controls the global body position
-    "betas": torch.Tensor(np.repeat(bdata["betas"][:num_betas][np.newaxis], repeats=time_length, axis=0)).to(comp_device),  # controls the body shape. Body shape is static
+    "betas": torch.Tensor(numpy.repeat(bdata["betas"][:num_betas][numpy.newaxis], repeats=time_length, axis=0)).to(comp_device),  # controls the body shape. Body shape is static
     "dmpls": torch.Tensor(bdata["dmpls"][:, :num_dmpls]).to(comp_device)  # controls soft tissue dynamics
 }
 
@@ -91,7 +90,7 @@ body_pose_beta = bm(**{k: v for k, v in body_parms.items() if k in [
 
 
 def vis_body_pose_beta(fId=0):
-    body_mesh = trimesh.Trimesh(vertices=c2c(body_pose_beta.v[fId]), faces=faces, vertex_colors=np.tile(colors["grey"], (6890, 1)))
+    body_mesh = trimesh.Trimesh(vertices=c2c(body_pose_beta.v[fId]), faces=faces, vertex_colors=numpy.tile(colors["grey"], (6890, 1)))
     mv.set_static_meshes([body_mesh])
     body_image = mv.render(render_wireframe=False)
     show_image(body_image)
@@ -129,7 +128,7 @@ body_pose_hand = bm(**{k: v for k, v in body_parms.items() if k in [
 
 
 def vis_body_pose_hand(fId=0):
-    body_mesh = trimesh.Trimesh(vertices=c2c(body_pose_hand.v[fId]), faces=faces, vertex_colors=np.tile(colors["grey"], (6890, 1)))
+    body_mesh = trimesh.Trimesh(vertices=c2c(body_pose_hand.v[fId]), faces=faces, vertex_colors=numpy.tile(colors["grey"], (6890, 1)))
     mv.set_static_meshes([body_mesh])
     body_image = mv.render(render_wireframe=False)
     show_image(body_image)
@@ -176,7 +175,7 @@ body_dmpls = bm(**{k: v for k, v in body_parms.items() if k in [
 
 
 def vis_body_dmpls(fId=0):
-    body_mesh = trimesh.Trimesh(vertices=c2c(body_dmpls.v[fId]), faces=faces, vertex_colors=np.tile(colors["grey"], (6890, 1)))
+    body_mesh = trimesh.Trimesh(vertices=c2c(body_dmpls.v[fId]), faces=faces, vertex_colors=numpy.tile(colors["grey"], (6890, 1)))
     mv.set_static_meshes([body_mesh])
     body_image = mv.render(render_wireframe=False)
     show_image(body_image)
@@ -215,7 +214,7 @@ body_trans_root = bm(**{k: v for k, v in body_parms.items() if k in [
 
 
 def vis_body_trans_root(fId=0):
-    body_mesh = trimesh.Trimesh(vertices=c2c(body_trans_root.v[fId]), faces=faces, vertex_colors=np.tile(colors["grey"], (6890, 1)))
+    body_mesh = trimesh.Trimesh(vertices=c2c(body_trans_root.v[fId]), faces=faces, vertex_colors=numpy.tile(colors["grey"], (6890, 1)))
     mv.set_static_meshes([body_mesh])
     body_image = mv.render(render_wireframe=False)
     show_image(body_image)
@@ -225,7 +224,7 @@ vis_body_trans_root(fId=0)
 
 
 def vis_body_transformed(fId=0):
-    body_mesh = trimesh.Trimesh(vertices=c2c(body_trans_root.v[fId]), faces=faces, vertex_colors=np.tile(colors["grey"], (6890, 1)))
+    body_mesh = trimesh.Trimesh(vertices=c2c(body_trans_root.v[fId]), faces=faces, vertex_colors=numpy.tile(colors["grey"], (6890, 1)))
     body_mesh.apply_transform(trimesh.transformations.rotation_matrix(-90, (0, 0, 1)))
     body_mesh.apply_transform(trimesh.transformations.rotation_matrix(30, (1, 0, 0)))
 
