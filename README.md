@@ -76,6 +76,7 @@ def imagearray2file(img_array, outpath=None, fps=30):
     '''
     # content ...
 
+    # "fps" is deprecated argument, use "duration" instead in new version of imageio
     with imageio.get_writer(outpath, mode='I', duration=(1000 * 1 / fps)) as writer:
         pass
 
