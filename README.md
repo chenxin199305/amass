@@ -33,7 +33,7 @@ conda activate amass
 bash install_env.sh
 ```
 
-2. Change dependency code to enable plot image using matplotlib:
+2. Change dependency code to enable plot image using matplotlib (Due to codebase bugs):
 
 ```python
 # In body_visualizer/tools/vis_tools.py
