@@ -24,7 +24,7 @@ print(
 
 # Choose the device to run the body model on.
 # comp_device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-comp_device = "cpu"
+comp_device = "cpu"  # Using GPU may cause unexpected issues for some users
 
 amass_npz_fname = osp.join(support_dir, "github_data/dmpl_sample.npz")  # the path to body data
 bdata = np.load(amass_npz_fname)
@@ -84,7 +84,10 @@ from body_visualizer.tools.vis_tools import show_image
 imw, imh = 1600, 1600
 mv = MeshViewer(width=imw, height=imh, use_offscreen=True)
 
-body_pose_beta = bm(**{k: v for k, v in body_parms.items() if k in ["pose_body", "betas"]})
+body_pose_beta = bm(**{k: v for k, v in body_parms.items() if k in [
+    "pose_body",
+    "betas",
+]})
 
 
 def vis_body_pose_beta(fId=0):
@@ -112,81 +115,113 @@ vis_body_pose_beta(fId=0)
 
 # ====================================================================================================
 
-# # Visualize pose hands
-#
-# body_pose_hand = bm(**{k: v for k, v in body_parms.items() if k in ["pose_body", "betas", "pose_hand"]})
-#
-#
-# def vis_body_pose_hand(fId=0):
-#     body_mesh = trimesh.Trimesh(vertices=c2c(body_pose_hand.v[fId]), faces=faces, vertex_colors=np.tile(colors["grey"], (6890, 1)))
-#     mv.set_static_meshes([body_mesh])
-#     body_image = mv.render(render_wireframe=False)
-#     show_image(body_image)
-#
-#
-# vis_body_pose_hand(fId=0)
-#
-#
+print(
+    f"\n",
+    f"=" * 50 + "\n",
+    f"Visualize pose hands\n",
+    f"=" * 50 + "\n",
+)
+
+body_pose_hand = bm(**{k: v for k, v in body_parms.items() if k in [
+    "pose_body",
+    "betas",
+    "pose_hand",
+]})
+
+
+def vis_body_pose_hand(fId=0):
+    body_mesh = trimesh.Trimesh(vertices=c2c(body_pose_hand.v[fId]), faces=faces, vertex_colors=np.tile(colors["grey"], (6890, 1)))
+    mv.set_static_meshes([body_mesh])
+    body_image = mv.render(render_wireframe=False)
+    show_image(body_image)
+
+
+vis_body_pose_hand(fId=0)
 
 # ====================================================================================================
 
-# # Visualize body joints
-#
-# def vis_body_joints(fId=0):
-#     joints = c2c(body_pose_hand.Jtr[fId])
-#     joints_mesh = points_to_spheres(joints, point_color=colors["red"], radius=0.005)
-#
-#     mv.set_static_meshes([joints_mesh])
-#     body_image = mv.render(render_wireframe=False)
-#     show_image(body_image)
-#
-#
-# vis_body_joints(fId=0)
-#
+print(
+    f"\n",
+    f"=" * 50 + "\n",
+    f"Visualize body joints\n",
+    f"=" * 50 + "\n",
+)
+
+
+def vis_body_joints(fId=0):
+    joints = c2c(body_pose_hand.Jtr[fId])
+    joints_mesh = points_to_spheres(joints, point_color=colors["red"], radius=0.005)
+
+    mv.set_static_meshes([joints_mesh])
+    body_image = mv.render(render_wireframe=False)
+    show_image(body_image)
+
+
+vis_body_joints(fId=0)
 
 # ====================================================================================================
 
-# # Visualize DMPLs
-#
-# body_dmpls = bm(**{k: v for k, v in body_parms.items() if k in ["pose_body", "betas", "pose_hand", "dmpls"]})
-#
-#
-# def vis_body_dmpls(fId=0):
-#     body_mesh = trimesh.Trimesh(vertices=c2c(body_dmpls.v[fId]), faces=faces, vertex_colors=np.tile(colors["grey"], (6890, 1)))
-#     mv.set_static_meshes([body_mesh])
-#     body_image = mv.render(render_wireframe=False)
-#     show_image(body_image)
-#
-#
-# vis_body_dmpls(fId=0)
-#
+print(
+    f"\n",
+    f"=" * 50 + "\n",
+    f"Visualize DMPLs\n",
+    f"=" * 50 + "\n",
+)
+
+body_dmpls = bm(**{k: v for k, v in body_parms.items() if k in [
+    "pose_body",
+    "betas",
+    "pose_hand",
+    "dmpls",
+]})
+
+
+def vis_body_dmpls(fId=0):
+    body_mesh = trimesh.Trimesh(vertices=c2c(body_dmpls.v[fId]), faces=faces, vertex_colors=np.tile(colors["grey"], (6890, 1)))
+    mv.set_static_meshes([body_mesh])
+    body_image = mv.render(render_wireframe=False)
+    show_image(body_image)
+
+
+vis_body_dmpls(fId=0)
 
 # ====================================================================================================
 
-# # Visualizing the global root orientation
-#
-# body_trans_root = bm(**{k: v for k, v in body_parms.items() if k in ["pose_body", "betas", "pose_hand", "dmpls",
-#                                                                      "trans", "root_orient"]})
-#
-#
-# def vis_body_trans_root(fId=0):
-#     body_mesh = trimesh.Trimesh(vertices=c2c(body_trans_root.v[fId]), faces=faces, vertex_colors=np.tile(colors["grey"], (6890, 1)))
-#     mv.set_static_meshes([body_mesh])
-#     body_image = mv.render(render_wireframe=False)
-#     show_image(body_image)
-#
-#
-# vis_body_trans_root(fId=0)
-#
-#
-# def vis_body_transformed(fId=0):
-#     body_mesh = trimesh.Trimesh(vertices=c2c(body_trans_root.v[fId]), faces=faces, vertex_colors=np.tile(colors["grey"], (6890, 1)))
-#     body_mesh.apply_transform(trimesh.transformations.rotation_matrix(-90, (0, 0, 1)))
-#     body_mesh.apply_transform(trimesh.transformations.rotation_matrix(30, (1, 0, 0)))
-#
-#     mv.set_static_meshes([body_mesh])
-#     body_image = mv.render(render_wireframe=False)
-#     show_image(body_image)
-#
-#
-# vis_body_transformed(fId=0)
+print(
+    f"\n",
+    f"=" * 50 + "\n",
+    f"Visualize global root orientation and translation\n",
+    f"=" * 50 + "\n",
+)
+
+body_trans_root = bm(**{k: v for k, v in body_parms.items() if k in [
+    "pose_body",
+    "betas",
+    "pose_hand",
+    "dmpls",
+    "trans",
+    "root_orient",
+]})
+
+
+def vis_body_trans_root(fId=0):
+    body_mesh = trimesh.Trimesh(vertices=c2c(body_trans_root.v[fId]), faces=faces, vertex_colors=np.tile(colors["grey"], (6890, 1)))
+    mv.set_static_meshes([body_mesh])
+    body_image = mv.render(render_wireframe=False)
+    show_image(body_image)
+
+
+vis_body_trans_root(fId=0)
+
+
+def vis_body_transformed(fId=0):
+    body_mesh = trimesh.Trimesh(vertices=c2c(body_trans_root.v[fId]), faces=faces, vertex_colors=np.tile(colors["grey"], (6890, 1)))
+    body_mesh.apply_transform(trimesh.transformations.rotation_matrix(-90, (0, 0, 1)))
+    body_mesh.apply_transform(trimesh.transformations.rotation_matrix(30, (1, 0, 0)))
+
+    mv.set_static_meshes([body_mesh])
+    body_image = mv.render(render_wireframe=False)
+    show_image(body_image)
+
+
+vis_body_transformed(fId=0)
