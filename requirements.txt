@@ -15,3 +15,5 @@ matplotlib==3.5.3
 trimesh
 pyrender
 pyglet<2.0
+
+tables

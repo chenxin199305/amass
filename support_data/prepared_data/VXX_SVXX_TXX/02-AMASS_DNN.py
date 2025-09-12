@@ -40,7 +40,6 @@ logger(msg)
 #     "train": ["CMU", "MPI_Limits", "TotalCapture", "Eyes_Japan_Dataset", "KIT",
 #               "BML", "EKUT", "TCD_handMocap", "ACCAD"]
 # }
-
 amass_splits = {
     "vald": ["SFU", ],
     "test": ["SSM_synced"],
