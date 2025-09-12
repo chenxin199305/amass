@@ -30,3 +30,11 @@ conda activate amass
 # Install required packages
 bash install_env.sh
 ```
+
+### Run Scripts
+
+1. Run `01-AMASS_Visualization.py` as following:
+
+```bash
+python pyscript/01-AMASS_Visualization.py
+```
