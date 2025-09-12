@@ -22,6 +22,8 @@ Please download models and place them them in body_models folder of this reposit
 
 ### Environment Setup
 
+1. Install dependencies:
+
 ```shell
 # Create conda environment
 conda create -n amass python=3.7 -y
@@ -29,6 +31,31 @@ conda activate amass
 
 # Install required packages
 bash install_env.sh
+```
+
+2. Change dependency code to enable plot image using matplotlib:
+
+```shell
+# In body_visualizer/tools/vis_tools.py
+def show_image(img_ndarray):
+    '''
+    Visualize rendered body images resulted from render_smpl_params in Jupyter notebook
+    :param img_ndarray: Nxim_hxim_wx3
+    '''
+    import matplotlib.pyplot as plt
+    import cv2
+    fig = plt.figure(figsize=(4, 4), dpi=300)
+    ax = fig.gca()
+
+    img = img_ndarray.astype(np.uint8)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    ax.imshow(img)
+    plt.axis('off')
+
+    plt.show()  # ADD THIS LINE
+
+    # fig.canvas.draw()
+    # return True
 ```
 
 ### Run Scripts
