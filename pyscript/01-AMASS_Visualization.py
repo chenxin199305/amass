@@ -1,4 +1,5 @@
 # Visualizing Body Data
+import time
 
 import torch
 import numpy as np
@@ -66,6 +67,13 @@ print("time_length = {}".format(time_length))
 
 # ====================================================================================================
 
+print(
+    f"\n",
+    f"=" * 50 + "\n",
+    f"Visualize betas and pose_body\n",
+    f"=" * 50 + "\n",
+)
+
 import trimesh
 
 from body_visualizer.tools.vis_tools import colors
@@ -76,8 +84,6 @@ from body_visualizer.tools.vis_tools import show_image
 imw, imh = 1600, 1600
 mv = MeshViewer(width=imw, height=imh, use_offscreen=True)
 
-# Visualize betas and pose_body
-
 body_pose_beta = bm(**{k: v for k, v in body_parms.items() if k in ["pose_body", "betas"]})
 
 
@@ -86,6 +92,20 @@ def vis_body_pose_beta(fId=0):
     mv.set_static_meshes([body_mesh])
     body_image = mv.render(render_wireframe=False)
     show_image(body_image)
+
+    print(
+        f"Frame ID: {fId}\n"
+        f"Body vertices (v) shape: {body_pose_beta.v.shape}\n"
+        f"Body vertices (v) min: {body_pose_beta.v.min()}\n"
+        f"Body vertices (v) max: {body_pose_beta.v.max()}\n"
+        f"Body vertices (v) mean: {body_pose_beta.v.mean()}\n"
+        f"Body vertices (v) std: {body_pose_beta.v.std()}\n"
+        f"Body faces shape: {faces.shape}\n"
+        f"Body faces min: {faces.min()}\n"
+        f"Body faces max: {faces.max()}\n"
+        f"Body faces mean: {faces.mean()}\n"
+        f"Body faces std: {faces.std()}\n"
+    )
 
 
 vis_body_pose_beta(fId=0)
