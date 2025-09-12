@@ -121,6 +121,6 @@ support_data/body_models/model_compress\.py
 
 support_data/body_model/
 support_data/amass_npz/
-support_data/prepared_data/*
+support_data/prepared_data/
 
 notebooks/dmpl_sample.gif
