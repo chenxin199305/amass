@@ -17,3 +17,5 @@ pyrender
 pyglet<2.0
 
 tables
+pytest
+protobuf==3.20.3

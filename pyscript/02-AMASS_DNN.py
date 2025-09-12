@@ -8,6 +8,8 @@ import torch
 import os
 from os import path as osp
 
+from tests.metrics.functional.test_reduction import test_reduce
+
 current_file_path = osp.abspath(__file__)
 current_dir = osp.dirname(current_file_path)
 project_dir = osp.dirname(current_dir)
@@ -35,18 +37,20 @@ logger("[%s] AMASS Data Preparation Began." % expr_code)
 logger(msg)
 
 # amass_splits = {
-#     "vald": ["HumanEva", "MPI_HDM05", "SFU", "MPI_mosh"],
+#     "valid": ["HumanEva", "MPI_HDM05", "SFU", "MPI_mosh"],
 #     "test": ["Transitions_mocap", "SSM_synced"],
 #     "train": ["CMU", "MPI_Limits", "TotalCapture", "Eyes_Japan_Dataset", "KIT",
 #               "BML", "EKUT", "TCD_handMocap", "ACCAD"]
 # }
 
 amass_splits = {
-    "vald": ["SFU", ],
-    "test": ["SSM_synced"],
-    "train": ["MPI_Limits"]
+    "valid": ["SFU", ],
+    "test": ["SSM_synced", ],
+    "train": ["MPI_Limits", ]
 }
-amass_splits["train"] = list(set(amass_splits["train"]).difference(set(amass_splits["test"] + amass_splits["vald"])))
+amass_splits["train"] = list(
+    set(amass_splits["train"]).difference(set(amass_splits["test"] + amass_splits["valid"]))
+)  # ensure train does not contain test or valid
 
 # ====================================================================================================
 
@@ -85,9 +89,9 @@ class AMASS_DS(Dataset):
 
 
 num_betas = 16  # number of body parameters
-testsplit_dir = os.path.join(work_dir, "stage_III", "test")
+test_split_dir = os.path.join(work_dir, "stage_III", "test")
 
-ds = AMASS_DS(dataset_dir=testsplit_dir, num_betas=num_betas)
+ds = AMASS_DS(dataset_dir=test_split_dir, num_betas=num_betas)
 print("Test split has %d datapoints." % len(ds))
 
 batch_size = 5
@@ -107,7 +111,7 @@ mv = MeshViewer(width=imw, height=imh, use_offscreen=True)
 
 from human_body_prior.body_model.body_model import BodyModel
 
-bm_fname = osp.join(support_dir, "body_models/smplh/male/model.npz")
+bm_fname = osp.join(support_dir, "body_model/smplh/male/model.npz")
 
 num_betas = 16  # number of body parameters
 num_dmpls = 8  # number of DMPL parameters
